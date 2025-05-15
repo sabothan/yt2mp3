@@ -1,1 +1,3 @@
 tqdm
+pytube
+ffmpeg-python
