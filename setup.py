@@ -7,7 +7,7 @@ Install yt2mp3 with:
 from setuptools import setup, find_packages
 
 
-NAME = 'ytmp3'
+NAME = 'yt2mp3'
 VERSION = '0.0.1'
 AUTHOR = 'sabothan'
 description = 'A minimalistic CLI tool to convert YouTube videos to MP3 files.'
