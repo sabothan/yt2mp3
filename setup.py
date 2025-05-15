@@ -1,7 +1,7 @@
 """Setup yt2mp3.
 
 Install yt2mp3 with:
-    $ pip install .
+    $ pip install -e .
 """
 
 from setuptools import setup, find_packages
