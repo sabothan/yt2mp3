@@ -50,18 +50,18 @@ def main():
     # Clean URL
     print_verbose("Sanitizing YouTube URL...", args.verbose)
     url = clean_youtube_url(args.url)
-    print_verbose(f"Using URL: {url}", args.verbose)
+    print_verbose(f"Using URL: `{url}`", args.verbose)
 
     # Prepare output directory
     out_dir = Path(args.path).expanduser().resolve()
     if not out_dir.exists():
-        print_verbose(f"Output directory {out_dir} not found. Creating...", args.verbose)
+        print_verbose(f"Output directory `{out_dir}` not found. Creating...", args.verbose)
         out_dir.mkdir(parents=True, exist_ok=True)
     else:
-        print_verbose(f"Output directory {out_dir} exists.", args.verbose)
+        print_verbose(f"Output directory `{out_dir}` exists.", args.verbose)
 
     # Download audio stream
-    print_verbose(f"Downloading audio from {url}", args.verbose)
+    print_verbose(f"Downloading audio from `{url}`", args.verbose)
     try:
         temp_path = download_audio(url, out_dir)  # now returns a Path
     except Exception as e:
@@ -71,9 +71,9 @@ def main():
     # Convert to MP3
     mp3_name = temp_path.stem.replace("temp_", "") + ".mp3"
     mp3_path = out_dir / mp3_name
-    print(f"Converting to MP3 → {mp3_name}")
+    print(f"Converting to MP3: `{mp3_name}`")
     try:
-        convert_to_mp3(temp_path, mp3_path)
+        convert_to_mp3(temp_path, mp3_path, args.verbose)
     except Exception as e:
         print(f"Failed to convert to MP3: {e}", file=sys.stderr)
         sys.exit(1)

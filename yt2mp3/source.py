@@ -31,17 +31,22 @@ def download_audio(url: str, out_dir: Path) -> Path:
     )
     return Path(out_file)
 
-def convert_to_mp3(src_path: Path, dest_path: Path):
+def convert_to_mp3(src_path: Path, dest_path: Path, verbose: bool):
     """
     Invokes ffmpeg to transcode the downloaded file into an MP3.
     """
+    if verbose:
+        loglevel = "info"
+    else:
+        loglevel = "warning"
+    
     cmd = [
         "ffmpeg", "-y",
         "-i", str(src_path),
         "-vn",             # no video
         "-ab", "192k",     # bitrate
         "-ar", "44100",    # sample rate
-        "-loglevel", "warning",
+        "-loglevel", f"{loglevel}",
         str(dest_path)
     ]
     subprocess.run(cmd, check=True)
