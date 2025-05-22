@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs, urlunparse, urlencode
 
-from .util import download_audio, convert_to_mp3
+from .download import download_audio, convert_to_mp3
 from .config import get_config, set_config
 
 def clean_youtube_url(url: str) -> str:
@@ -51,7 +51,8 @@ def main():
                         help="Enable verbose output")
     
     config = subparser.add_parser('config', description='Configure the default values for the available flags')
-    config.add_argument('value', nargs='+', help='Specify the option to configure')
+    config.add_argument('option', nargs='+', help='Specify the option to configure')
+    config.add_argument('value', nargs='+', help='Specify the value of the option to configure')
 
     args = parser.parse_args()
 
@@ -92,7 +93,7 @@ def main():
         print("Done!")
 
     elif(args.command == 'config'):
-        get_config()
+        set_config(key=args.option, value=args.value)
 
 
 if __name__ == "__main__":
