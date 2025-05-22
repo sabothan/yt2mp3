@@ -4,7 +4,6 @@ from pathlib import Path
 from urllib.error import HTTPError
 
 from pytubefix import YouTube
-from pytubefix.cli import on_progress  # optional, if you want callbacks
 
 def download_audio(url: str, out_dir: Path) -> Path:
     """
