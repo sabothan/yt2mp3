@@ -3,9 +3,9 @@ import sys
 from pathlib import Path
 from configparser import ConfigParser
 
-CONFIG_FILE = Path(__file__).resolve().parent.parent / "yt2mp3.config"
+CONFIG_FILE = Path(__file__).resolve().parent / ".yt2mp3.config"
 
-SUPPORTED_KEYS = {'ouptut.path', 'audio.format'}
+SUPPORTED_KEYS = {'ouptut.default_path', 'audio.format'}
 
 def get_config() -> ConfigParser:
     config = ConfigParser()
@@ -43,3 +43,4 @@ def set_config(key: str, value: str):
 
     # Save configurations
     _save_config(config)
+    print('Configuration saved')
