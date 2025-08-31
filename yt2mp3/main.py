@@ -1,33 +1,30 @@
-import sys
+#!/usr/bin/env python3
 import argparse
+from pathlib import Path
+from .convert import process_url
 
-from .convert import convert
-from .config import get_config, set_config
+def build_parser():
+    p = argparse.ArgumentParser(
+        prog="yt2mp3",
+        description="Download audio (MP3) or video (MP4) from YouTube URLs or playlists."
+    )
+    sub = p.add_subparsers(dest="command", required=True)
 
+    dl = sub.add_parser("download", help="Download from a YouTube URL or playlist")
+    dl.add_argument("url", type=str, help="YouTube video or playlist URL")
+    dl.add_argument("-p", "--path", type=str, default=str(Path.home() / "Downloads"),
+                    help="Target output directory (default: ~/Downloads)")
+    dl.add_argument("--video", action="store_true",
+                    help="Download best video + best audio and mux (MP4). Default is MP3 audio only.")
+    dl.add_argument("-v", "--verbose", action="store_true", help="Verbose logging")
+    return p
 
 def main():
-    parser = argparse.ArgumentParser(description="Convert YouTube videos to MP3.")
-    subparser = parser.add_subparsers(dest="command", required=True)
-
-    download = subparser.add_parser('download', description='Download audio from YouTube videos.')
-    download.add_argument('url', type=str, help='The URL to the YouTube video')
-    download.add_argument("-p", "--path", type=str, default=None, help="The target folder for the download. (Overrides config)")
-    download.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
-    download.add_argument("--video", action="store_true", help="Download the entire video")
-    
-    config = subparser.add_parser('config', description='Configure the default values for the available flags')
-    config.add_argument('option', type=str, help='Specify the option to configure')
-    config.add_argument('value', type=str, help='Specify the value of the option to configure')
-
-    args = parser.parse_args()
-
-    if(args.command == 'download'):
-        convert(args)
-
-    elif(args.command == 'config'):
-        set_config(key=args.option, value=args.value)
-
+    args = build_parser().parse_args()
+    if args.command == "download":
+        out_dir = Path(args.path).expanduser().resolve()
+        out_dir.mkdir(parents=True, exist_ok=True)
+        process_url(args.url, out_dir, download_video=args.video, verbose=args.verbose)
 
 if __name__ == "__main__":
     main()
-    sys.exit(0)

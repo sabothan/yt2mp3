@@ -1,3 +1,4 @@
-def print_verbose(msg: str, verbose: bool):
+# Minimal helper placeholder in case other modules import it later.
+def print_verbose(verbose: bool, *args, **kwargs):
     if verbose:
-        print(msg)
+        print(*args, **kwargs, flush=True)
