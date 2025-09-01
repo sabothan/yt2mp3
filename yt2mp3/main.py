@@ -17,6 +17,8 @@ def build_parser():
     dl.add_argument("--video", action="store_true",
                     help="Download best video + best audio and mux (MP4). Default is MP3 audio only.")
     dl.add_argument("-v", "--verbose", action="store_true", help="Verbose logging")
+    dl.add_argument("--mkv", action="store_true",
+                    help="Save as MKV without re-encoding (fast, lossless, but not QuickTime compatible)")
     return p
 
 def main():
@@ -24,7 +26,7 @@ def main():
     if args.command == "download":
         out_dir = Path(args.path).expanduser().resolve()
         out_dir.mkdir(parents=True, exist_ok=True)
-        process_url(args.url, out_dir, download_video=args.video, verbose=args.verbose)
+        process_url(args.url, out_dir, download_video=args.video, verbose=args.verbose, use_mkv=args.mkv)
 
 if __name__ == "__main__":
     main()

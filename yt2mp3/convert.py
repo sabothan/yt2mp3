@@ -197,32 +197,40 @@ def _to_mp3(audio_path: Path, out_path: Path, verbose: bool):
         .run(quiet=not verbose)
     )
 
-def _download_video(yt: YouTube, out_dir: Path, verbose: bool) -> Path:
+def _download_video(yt: YouTube, out_dir: Path, verbose: bool, *, use_mkv: bool = False) -> Path:
     title = yt.title or "video"
     safe_title = _slugify(title)
-    tmp_v = out_dir / f".tmp_{safe_title}.video.mp4"
+    tmp_v = out_dir / f".tmp_{safe_title}.video"
     tmp_a = out_dir / f".tmp_{safe_title}.audio"
-    out_path = out_dir / f"{safe_title}.mp4"
+    ext = "mkv" if use_mkv else "mp4"
+    out_path = out_dir / f"{safe_title}.{ext}"
 
     v_stream = _best_video_stream(yt)
     a_stream = _best_audio_stream(yt)
-    if not v_stream:
-        raise RuntimeError("No suitable video stream found.")
-    if not a_stream:
-        raise RuntimeError("No suitable audio stream found.")
+    if not v_stream or not a_stream:
+        raise RuntimeError("No suitable video/audio stream found.")
 
-    _print(verbose, f"Downloading video: {title} [{getattr(v_stream,'resolution',None)} @ {getattr(v_stream,'fps',None)}fps]")
+    _print(verbose, f"Downloading video: {title}")
     _download_stream(v_stream, tmp_v)
-    _print(verbose, f"Downloading audio (best available, may be opus/aac)")
+    _print(verbose, f"Downloading audio")
     _download_stream(a_stream, tmp_a)
 
-    _mux_av(tmp_v, tmp_a, out_path, verbose)
+    if use_mkv:
+        # Fast remux: no re-encode, just container copy
+        _print(verbose, f"Muxing streams into MKV (no re-encode)")
+        (
+            ffmpeg
+            .output(ffmpeg.input(str(tmp_v)), ffmpeg.input(str(tmp_a)), str(out_path),
+                    c="copy", shortest=None)
+            .overwrite_output()
+            .run(quiet=not verbose)
+        )
+    else:
+        # Re-encode to H.264/AAC MP4
+        _mux_av(tmp_v, tmp_a, out_path, verbose)
 
-    try:
-        tmp_v.unlink(missing_ok=True)
-        tmp_a.unlink(missing_ok=True)
-    except Exception:
-        pass
+    tmp_v.unlink(missing_ok=True)
+    tmp_a.unlink(missing_ok=True)
 
     return out_path
 
@@ -245,9 +253,9 @@ def _download_audio(yt: YouTube, out_dir: Path, verbose: bool) -> Path:
         pass
     return out_path
 
-def _process_single(url: str, out_dir: Path, *, download_video: bool, verbose: bool) -> Path:
+def _process_single(url: str, out_dir: Path, *, download_video: bool, verbose: bool, use_mkv: bool = False) -> Path:
     def run_with(yt: YouTube):
-        return _download_video(yt, out_dir, verbose) if download_video else _download_audio(yt, out_dir, verbose)
+        return _download_video(yt, out_dir, verbose, use_mkv=use_mkv) if download_video else _download_audio(yt, out_dir, verbose)
 
     # 1) Try anonymous first (cookies may help)
     try:
