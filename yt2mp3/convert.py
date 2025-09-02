@@ -314,7 +314,7 @@ def _process_single(url: str, out_dir: Path, *, download_video: bool, verbose: b
                 continue
             raise
 
-def process_url(url: str, out_dir: Path, *, download_video: bool = False, verbose: bool = False):
+def process_url(url: str, out_dir: Path, *, download_video: bool = False, verbose: bool = False, use_mkv: bool = False):
     # Install cookie opener once per run (verbose output if requested)
     _install_cookie_opener(verbose=verbose)
 
@@ -328,7 +328,7 @@ def process_url(url: str, out_dir: Path, *, download_video: bool = False, verbos
             print(f"Found playlist: {pl.title} ({len(pl.video_urls)} videos)")
             for idx, vid_url in enumerate(pl.video_urls, start=1):
                 try:
-                    result = _process_single(vid_url, playlist_dir, download_video=download_video, verbose=verbose)
+                    result = _process_single(vid_url, playlist_dir, download_video=download_video, verbose=verbose, use_mkv=use_mkv)
                     print(f"[{idx}/{len(pl.video_urls)}] ✓ {result.name}")
                 except Exception as e:
                     msg = str(e)
@@ -343,7 +343,7 @@ def process_url(url: str, out_dir: Path, *, download_video: bool = False, verbos
 
     # Single video
     try:
-        result = _process_single(url, out_dir, download_video=download_video, verbose=verbose)
+        result = _process_single(url, out_dir, download_video=download_video, verbose=verbose, use_mkv=use_mkv)
         print(f"✓ {result}")
     except Exception as e:
         msg = str(e)
