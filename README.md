@@ -58,6 +58,11 @@ Verbose mode (shows detailed logs):
 yt2mp3 download "URL" --video -p ~/Downloads -v
 ```
 
+**Note**:  
+When downloading a video `--video` by default a `.mp4` file will be generated. If you wish to get a `.mkv` instead simply pass the flag `--mkv` to the CLI call.
+
+
+
 ---
 
 ## Handling age-restricted content
